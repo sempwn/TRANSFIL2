@@ -9,6 +9,11 @@
      <link rel="stylesheet" href="./assets/css/sticky-footer.css" type="text/css">
      <link rel="stylesheet" href="./assets/css/d3.slider.css" type="text/css">
      <style>
+
+     .popover{
+       max-width: 400%; /* Max Width of the popover (depending on the container!) */
+     }
+
      .radio_item{
         display: none !important;
       }
@@ -101,7 +106,23 @@
 
    </head>
    <body>
-    <div class="container-fluid">
+     <nav class="navbar navbar-default navbar-fixed-top">
+       <div class="navbar-header">
+
+         <a class="navbar-brand" href="http://www.ntdmodelling.org"><img src="./assets/img/NTD_MC.png" alt="NTD Modelling consortium" style="max-width:100px; margin-top: -7px; float:right; display: block;">
+</a>
+       </div>
+       <div id="navbar" class="collapse navbar-collapse">
+         <ul class="nav navbar-nav">
+           <li><a href="#" id="about" data-toggle="modal" data-target="#aboutModal"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>About</a></li>
+         </ul>
+       </div><!--/.nav-collapse -->
+      <div class="container">
+
+
+      </div>
+    </nav>
+    <div class="container-fluid" style="padding-top: 60px; padding-bottom: 60px;">
      <div class="row">
        <div role="tabpanel">
 
@@ -123,7 +144,7 @@
                 <h3 class="text-center" id="scenario-title">Scenario Overview</h3>
                 <div class="row">
                   <div class="col-md-10 col-md-offset-1">
-                    <div class="form-group">
+                    <div id = "sel-stat-group" class="form-group">
                       <label for="sel-stat">Select scenario statistic:</label>
                       <select class="form-control" id="sel-stat">
                         <option value='mf'>mf prevalence</option>
@@ -165,7 +186,6 @@
                       <label for="sel-comp-stat">Select scenario comparison statistic:</label>
                       <select class="form-control" id="sel-comp-stat">
                         <option value = 'rounds'>no. rounds to pre-TAS</option>
-                        <option value = 'doses'>no. doses per year</option>
                         <option value = 'prev'> reduction in prevalence (%)</option>
                       </select>
                     </div>
@@ -270,23 +290,9 @@
               <div class="col-md-4 col-md-offset-4">
                 <h2 class="text-center">Systematic adherence panel</h2>
                 <form>
-                  <div class="form-group">
-                    <label for="inputMDARounds">Systematic adherence</label>
-                    <div class="input-group">
 
-                      <input id="sysAdherence" data-slider-id='sysAdherenceSlider' type="text" data-slider-min="0" data-slider-max="1.0" data-slider-step="0.1" data-slider-value="0"/>
 
-                    </div>
-                  </div>
 
-                  <div class="form-group">
-                    <label for="inputMDARounds">Bite-risk adherence correlation</label>
-                    <div class="input-group">
-
-                      <input id="brMda" data-slider-id='brMdaSlider' type="text" data-slider-min="0" data-slider-max="1.0" data-slider-step="0.1" data-slider-value="0"/>
-
-                    </div>
-                  </div>
 
                   <div class="form-group">
                     <label for="inputMDARounds">bed-net and mda adherence correlation</label>
@@ -438,7 +444,7 @@
   <footer class="footer">
     <div class="container">
       <p class="text-muted">Created by Michael Irvine. University of Warwick. &copy; 2015 <a href="./LICENSE">LICENSE</a><img src="./assets/img/NTD_MC.png" alt="NTD Modelling consortium" style="max-width:100px; margin-top: -7px; float:right; display: block;">
-        <img src="./assets/img/Warwick_logo.png" alt="NTD Modelling consortium" style="max-height:40px; margin-top: -7px; float:left; display: block;"></p>
+        <img src="./assets/img/Warwick_logo.png" alt="University of Warwick" style="max-height:40px; margin-top: -7px; float:left; display: block;"></p>
 
     </div>
   </footer>
@@ -578,34 +584,41 @@
                     <div class="form-group">
                       <label for="mdaRegimen">Drug regimen</label>
                       <div class="input-group" id="regimen-radio">
-                        <div class="radio">
+                        <div class="radio reg">
                           <label>
                             <input type="radio" name="mdaRegimenRadios" id="mdaRegimenRadios1" value="1" checked>
                             albendazole + ivermectin
                           </label>
-                        </div>
 
-                        <div class="radio">
+                        </div>
+                        <small class="desc" text="muted" id="desc1">Cannot be used in areas co-endemic with loaisis.</small>
+                        <div class="radio reg">
                           <label>
                             <input type="radio" name="mdaRegimenRadios" id="mdaRegimenRadios2" value="2">
                             albendazole + diethylcarbamazine
-                          </label>
-                        </div>
 
-                        <div class="radio">
+                          </label>
+
+                        </div>
+                        <small class="desc" text="muted" id="desc2">Cannot be used in areas co-endemic with loaisis or onchocerciasis.</small>
+                        <div class="radio reg">
                           <label>
                             <input type="radio" name="mdaRegimenRadios" id="mdaRegimenRadios3" value="3">
                             ivermectin
                           </label>
                         </div>
-
-                        <div class="radio">
+                        <small class="desc" text="muted" id="desc3">Cannot be used in areas co-endemic with loaisis.</small>
+                        <div class="radio reg">
                           <label>
                             <input type="radio" name="mdaRegimenRadios" id="mdaRegimenRadios4" value="4">
                             ivermectin + albendazole + diethylcarbamazine
                           </label>
+
                         </div>
-                        <div class="radio">
+                        <small class="desc" text="muted" id="desc4">Cannot be used in areas co-endemic with loaisis or onchocerciasis.</small>
+
+
+                        <div class="radio reg">
                           <label>
                             <input type="radio" name="mdaRegimenRadios" id="mdaRegimenRadios5" value="5">
                             custom
@@ -626,6 +639,17 @@
                           </small>
                         </div>
                       </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="inputMDARounds">Systematic adherence</label>
+                      <div class="input-group">
+
+                        <input id="sysAdherence" data-slider-id='sysAdherenceSlider' type="text" data-slider-min="0" data-slider-max="1.0" data-slider-step="0.1" data-slider-value="0"/>
+
+                      </div>
+                      <small class="text-muted">
+                        Controls how randomly coverage is applied. For 0, coverage is completely random. For 1, the same individuals are always treated.
+                      </small>
                     </div>
                   </form>
                 </div>
@@ -653,7 +677,9 @@
                       </div>
                     </div>
                     <p>
-                      Coverage of bed nets during intervention. The intervention period is defined as the range of time underwhich MDA occurs. If it is desired to investigate the use of bed nets alone as an intervention for a period of time then this can be controlled through setting the rounds of MDA to the number of years desired and setting the MDA coverage to 0%. <small>Bed nets are assumed to affect an individual's monthly bite rate only.</small>
+                      <small>Bed nets are assumed to have been distributed at the start of interventio and are assumed to be effective for the entire
+                      lifetime of the intervention campaign.
+                    </small>
                     </p>
 
                     <div class="form-group">
@@ -663,7 +689,7 @@
                       </div>
                     </div>
                     <p>
-                      Coverage of insecticide use during intervention. The intervention period is defined as the range of time underwhich MDA occurs. If it is desired to investigate the use of bed nets alone as an intervention for a period of time then this can be controlled through setting the rounds of MDA to the number of years desired and setting the MDA coverage to 0%. <small>Insecticide is assumed to affect the vector to host ratio only.</small>
+                       <small>Insecticide is assumed to affect the vector to host ratio only.</small>
                     </p>
 
 
@@ -687,6 +713,111 @@
       </div>
     </div>
   </div>
+
+  <!--Modal About -->
+  <div class="modal fade bs-example-modal-lg" id = "aboutModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <h4 class="modal-title" id="myLargeModalLabel">About TRANSFIL Modelling tool</h4>
+      </div>
+      <div class="modal-body">
+        <div class="jumbotron">
+          <h1>Modelling tool</h1>
+          <p class="lead">
+            This tool provides a way of assessing the impact of various interventions for a variety of backgrounds for Lymphatic Filariasis transmission.
+          </p>
+        </div>
+        <div class="bs-callout bs-callout-info">
+          <h4>Background</h4>
+          <p>
+            The underlying model is stochastic and individual-based. Its description includes an individual's worm burden, mf burden as well
+            as aspects of the transmission cycle in mosquito populations. Various interventions are also modelled on the population. The main intervention is
+            mass drug administration (MDA), where different regimens can be selected. Interventions also include vector control including bed-nets and insecticide treatment.
+            A full model description can be found in the accompanying P&amp;V paper, which can be found in the further reading section.
+
+          </p>
+        </div>
+        <h4>Tutorial</h4>
+          <h5>Add Scenario</h5>
+          <p>
+            Initially no analyses will be present and you will need to add a new one. Do this by clicking on the <kbd>Add Scenario</kbd> button
+          on the right hand-side. This will bring up a panel with various settings for the scenario that will be run. The settings are grouped
+          under main headings that can be clicked on to reveal them. The main settings are
+          </p>
+          <dl class="dl-horizontal">
+            <dt>Scenario</dt>
+            <dd>These are options related to how the scenario is labelled and how many simulations will be performed.
+            The label can be changed after the scenario has been run, but all other options will be fixed. The
+          <kbd>No. of runs</kbd> option specifies how many simulations will be performed. The smaller the number of simulations,
+          the less accurate the results will be, but the quicker the scenario will take to complete. It is advisable to have at least
+          100 runs (default setting) if this is feasible on the given machine.
+        </dd>
+            <dt>Setting</dt>
+            <dd>These options are to do with the scenario at baseline. <kbd>Vector species</kbd> specifies which is the dominant vector
+              species in the simulations (in general Anopheles in Africa and Culex in Asia although there are exceptions). There is also
+              a slider to adjust for the <kbd>Microfilaraemia prevalence</kbd>. This gives a general baseline mf prevalence before the start
+              of treatment, although due to the stochastic nature of the model, this is an approximation only.
+            </dd>
+            <dt>Mass Drug Administration</dt>
+            <dd>This panel gives various options to do with all aspects of an MDA programme. <kbd>Frequency of administration</kbd> can be selected at either
+            every year or every six months. It is assumed that treatment occurs simultaneously for all individuals. <kbd>Coverage (%)</kbd> can also base
+          selected between 0 and 100%. Although note if selected 0% it is still assumed an MDA event occurs, however with no-one being treated.
+         The <kbd>Drug regimen</kbd> can also be selected, where the efficacy of mf and adult worms killed are fixed. These values can also be varied by selecting
+       custom in the drug regimen option. Finally <kbd>Systematic adherence</kbd> can be selected. At 0, coverage is completely random and there is no correlation
+     in individuals who are treated ech round. At 1, the same individuals are treated each round according to the set coverage. The systematic adherence parameter
+   can then scale between these two extremes.</dd>
+            <dt>Vector Control</dt>
+            <dd>There are two possible forms of vector control. <kbd>Bed Net Coverage</kbd> controls for coverage of a single round of bed-nets that
+            are given out at the start of intervention, where coverage is assumed to be random. Note here bed-nets are only effective for Anopheles.
+            <kbd>Insecticide Coverage</kbd> is assumed to affect the whole mosquito population and affects the vector to host ratio.</dd>
+          </dl>
+          <p> Once the desired options for the scenario have been selected, click <kbd>Run Scenario</kbd> to begin the calculations or <kbd>close</kbd> to close the panel
+            and cancel the scenaro. Whilst running please wait for all simulations to complete. A progress bar at the bottom of the panel provides an estimate of the progress.
+            Once completed the scenario should display automatically.
+          </p>
+          <h5>Scenario Overview</h5>
+          <p>This is provided on the left hand side and provides a detailed description of outcomes for the individual scenario selected. The blue line indicates the
+          median value of the outputted statistic, whilst the grey lines show all the individual runs. The different scenarios that have been computed can be selected on
+          the bottom-left. This opens the settings panel with the settings set for that scenario. The label can also be changed from here and the raw data can be downloaded as a csv file.
+        </p>
+        <h5>Scenario Comparisons</h5>
+        <p>
+          These can be selected on the right-hand side. Various comparison statistics can be selected and the results for each scenario computed are shown. There is also the option underneath to add
+        a new scenario.
+      </p>
+        <h4>Further Reading</h4>
+        <div class="row">
+          <div class="col-sm-6 col-md-4">
+            <div class="thumbnail">
+
+              <div class="caption">
+                <h3>Modelling paper</h3>
+                <p>Provides an overview of the accompanying model
+                as well as the underlying parameters.</p>
+                <p><a href="https://parasitesandvectors.biomedcentral.com/articles/10.1186/s13071-015-1152-3" class="">link</a></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-md-4">
+            <div class="thumbnail">
+
+              <div class="caption">
+                <h3>Accompanying paper</h3>
+                <p>Provides a description and motivation behind this tool.</p>
+                <p><a href="#" class="">link</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 
   <div id="new-scenario-accordian" style="display: none;">
     <div class="panel panel-default">

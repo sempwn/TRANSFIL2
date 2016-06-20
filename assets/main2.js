@@ -399,7 +399,7 @@
             "covN" : $('#bedNetCoverage').val(), "v_to_hR" : $('#insecticideCoverage').val(),
             "vecCap" : $('#vectorialCapacity').val(), "vecComp" : $('#vectorialCompetence').val(),
             "vecD" : $('#vectorialDeathRate').val(), "mdaRegimen" : $("input[name=mdaRegimenRadios]:checked").val(),
-            "sysComp" : $('#sysAdherence').val(), "rhoBComp" : $('#brMda').val(), "rhoCN"  : $('#bedNetMda').val(),
+            "rho" : $('#sysAdherence').val(), "rhoBComp" : $('#brMda').val(), "rhoCN"  : $('#bedNetMda').val(),
             "species" : $("input[name=speciesRadios]:checked").val(),
             "macrofilaricide" : $('#Macrofilaricide').val(), "microfilaricide" : $('#Microfilaricide').val(),
             "runs" : $('#runs').val()

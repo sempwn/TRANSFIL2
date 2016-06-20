@@ -37,7 +37,13 @@ SessionData.storeResults =  function(results,scenLabel,stats){
 
   sessionData.scenarios[scenInd] = scenario;
   toStore = JSON.stringify(sessionData);
+  try{
   localStorage.setItem('sessionData', toStore);
+  }
+  catch(error)
+  {
+    alert('Too many scenarios to store. Try deleting some.')
+  }
   return sessionData;
 
 }
@@ -192,8 +198,20 @@ function scenarioComparisonSelectVisibility(){
   var n = (ses && ses.scenarios)? ses.scenarios.length : 0;
   if (n>0){
     $('#sel-comp-stat-div').show();
+    $('#sel-stat-group').show();
+    $('#about').popover({trigger: 'manual'});
+    $('#about').popover('hide');
   } else {
     $('#sel-comp-stat-div').hide();
+    $('#sel-stat-group').hide();
+    $('#about').popover({
+      animation: true,
+      title: "First time?",
+      content: "Click here for overview and tutorial.",
+      placement: "bottom",
+      trigger: "focus"
+    });
+    $('#about').popover('show');
   }
 }
 function scenarioRunStats(){
@@ -302,13 +320,15 @@ function timeSeriesPlot(title,y_title,stat){
   var res = SessionData.retrieveSession()['scenarios'][scenInd]['results'];
   var med = SessionData.retrieveSession()['scenarios'][scenInd]['stats'][stat];
   var n = res.length;
+
+
   for(var i=0; i<n; i++){
     trace = {
       type: 'scatter',
       x: res[i]['ts'],
       y: res[i][stat],
       mode: 'lines',
-      name: 'Blue',
+      hoverinfo: 'none',
       line: {
         color: 'rgb(200, 200, 200)',
         width: 1,
@@ -317,12 +337,13 @@ function timeSeriesPlot(title,y_title,stat){
     };
     data.push(trace);
   }
+
   trace = {
     type: 'scatter',
     x: res[0]['ts'],
     y: med,
     mode: 'lines',
-    name: 'Blue',
+    name: 'median',
     line: {
       color: 'rgb(0, 0, 200)',
       width: 2,
@@ -331,13 +352,16 @@ function timeSeriesPlot(title,y_title,stat){
   };
   data.push(trace);
 
+
   if((stat=='Ms')||(stat=='Ws')){
     var tval = (stat=='Ms')? 1.0:2.0;
     var trace = {
       x: res[0]['ts'],
       y: Array.apply(null, {length: res[0]['ts'].length}).map(Number.call, function(){return tval;}),
       mode: 'lines',
-      name: 'dot',
+      name: 'threshold',
+      text: 'pre-TAS threshold',
+      hoverinfo: 'text',
       line: {
         color: 'rgb(0, 0, 0)',
         dash: 'dot',
@@ -351,6 +375,8 @@ function timeSeriesPlot(title,y_title,stat){
     autosize: true,
     showlegend: false,
     title: title,
+    hovermode: 'closest',
+    textposition: 'top right',
     xaxis: {
       title: 'time since start of intervention (yrs)',
       showgrid: true,
@@ -366,7 +392,7 @@ function timeSeriesPlot(title,y_title,stat){
   };
 
 
-  Plotly.newPlot('map', data, layout,{displayModeBar: false, staticPlot: true});
+  Plotly.newPlot('map', data, layout,{displayModeBar: false});
 }
 
 function drawComparisonPlot(){
@@ -657,6 +683,7 @@ function fixInput(fix_input){
     $('#Microfilaricide').slider('disable');
     $('#Macrofilaricide').slider('disable');
     $('#runs').slider('disable');
+    $('#sysAdherence').slider('disable');
     $('#run_scenario').hide();
     $('input:radio[name=mdaSixMonths]').attr('disabled',true);
     $('input:radio[name=mdaRegimenRadios]').attr('disabled',true);
@@ -667,6 +694,7 @@ function fixInput(fix_input){
   } else {
     $('#runs').slider('enable');
     $('#MDACoverage').slider('enable');
+    $('#sysAdherence').slider('enable');
     $('#bedNetCoverage').slider('enable');
     $('#insecticideCoverage').slider('enable');
     $('#Microfilaricide').slider('enable');
@@ -696,6 +724,7 @@ function setmodelParams(fixInput){
   var ps = ses.scenarios[scenInd].params.inputs;
   $('#inputScenarioLabel').val(ses.scenarios[scenInd].label);
   $("#inputMDARounds").val(ps.mda);
+  $('#sysAdherence').val(ps.rho);
   $('#runs').slider('setValue',Number(ps.runs));
   $('#MDACoverage').slider('setValue', Number(ps.coverage));
   $('#endemicity').slider('setValue',Number(ps.endemicity));
@@ -711,7 +740,7 @@ function setmodelParams(fixInput){
       "covN" : $('#bedNetCoverage').val(), "v_to_hR" : $('#insecticideCoverage').val(),
       "vecCap" : $('#vectorialCapacity').val(), "vecComp" : $('#vectorialCompetence').val(),
       "vecD" : $('#vectorialDeathRate').val(), "mdaRegimen" : $("input[name=mdaRegimenRadios]:checked").val(),
-      "sysComp" : $('#sysAdherence').val(), "rhoBComp" : $('#brMda').val(), "rhoCN"  : $('#bedNetMda').val(),
+      "rho" : $('#sysAdherence').val(), "rhoBComp" : $('#brMda').val(), "rhoCN"  : $('#bedNetMda').val(),
       "species" : $("input[name=speciesRadios]:checked").val(),
       "macrofilaricide" : $('#Macrofilaricide').val(), "microfilaricide" : $('#Microfilaricide').val()
     }
@@ -761,6 +790,17 @@ $(document).ready(function(){
   });
   $('#scenario-label-button').on('click',changeLabel);
   $('#download').on('click',download);
+  $('.desc').hide();
+  $('#desc1').show();
+  $('input:radio[name="mdaRegimenRadios"]').click(function(){
+    console.log(this);
+    var test = $(this).val();
+
+     $("small.desc").hide();
+     $("#desc" + test).show();
+
+  });
+
 
 
 
