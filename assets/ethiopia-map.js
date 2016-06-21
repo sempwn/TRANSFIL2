@@ -310,7 +310,7 @@ function drawScenarioPlot(){
       timeSeriesPlot('L3 prevalence','larval prevalence in mosquito (%)','Ls');
     }
   } else {
-    Plotly.newPlot('map', [], [],{displayModeBar: false, staticPlot: true});
+    Plotly.newPlot('map', [], [],{displayModeBar: false});
   }
 }
 
@@ -342,7 +342,7 @@ function timeSeriesPlot(title,y_title,stat){
     type: 'scatter',
     x: res[0]['ts'],
     y: med,
-    mode: 'lines',
+    mode: 'lines+markers',
     name: 'median',
     line: {
       color: 'rgb(0, 0, 200)',
@@ -749,7 +749,7 @@ function setmodelParams(fixInput){
 function download(){
   var label = SessionData.retrieveSession()['scenarios'][ScenarioIndex.getIndex()]['label'];
   var res = SessionData.retrieveSession()['scenarios'][ScenarioIndex.getIndex()]['results'];
-  var headers = ["ts","run","microfilaraemia","antigenaemia","mosquito prevalence"].join(",");
+  var headers = ["time (years)","run","microfilaraemia","antigenaemia","mosquito prevalence"].join(",");
   var csvContent = "data:text/csv;charset=utf-8,"+headers+"\n";
   res.forEach(function(infoArray, index){
     infoArray['ts'].forEach(function(val,iindex){
