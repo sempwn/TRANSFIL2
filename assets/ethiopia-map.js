@@ -260,7 +260,7 @@ function createScenarioBoxes(){
         drawScenarioPlot();
         setmodelParams();
         fixInput();
-        $('#close_scenario').html('show scenario');
+        $('#close_scenario').html('Show Scenario');
         $('#scenario-messages').html('<div class="alert alert-success alert-dismissible" role="alert">  '
         + $('#'+this.id).data('scenario-label')
         + ' set </div>');
