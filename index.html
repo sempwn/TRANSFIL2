@@ -29,7 +29,7 @@
 
     <script src="./assets/js/bootstrap-slider.js"></script>
     <script src="./assets/js/bootbox.min.js"></script>
-    <script src="./assets/ugly_main.js"></script>
+    <script src="./assets/ugly.js"></script>
    </head>
    <body>
      <nav class="navbar navbar-default navbar-fixed-top">
@@ -52,7 +52,7 @@
 
          </ul>
          <div class="nav navbar-nav navbar-right">
-           <div class="navbar-brand">LF Transmission Projections - DEMO ONLY</div>
+           <div class="navbar-brand">LF Transmission Projections</div>
          </div>
        </div><!--/.nav-collapse -->
 
@@ -513,8 +513,9 @@
         <h4>Tutorial</h4>
           <h5>Add Scenario</h5>
           <p>
-            Initially no analyses will be present and you will need to add a new one. Do this by clicking on the <kbd>Add Scenario</kbd> button
-          on the right hand-side. This will bring up a panel with various settings for the scenario that will be run. The settings are grouped
+            Initially no analyses will be present and you will need to add a new one. Do this by clicking on the <kbd><span class="glyphicon glyphicon-menu-hamburger"></span></kbd>
+            menu button in the top-left corner
+              and selecting <kbd><span class="glyphicon glyphicon-plus-sign"></span>Add Scenario</kbd>. This will bring up a panel with various settings for the scenario that will be run. The settings are grouped
           under main headings that can be clicked on to reveal them. The main settings are
           </p>
           <dl class="dl-horizontal">
@@ -549,15 +550,26 @@
             Once completed the scenario should display automatically.
           </p>
           <h5>Scenario Overview</h5>
-          <p>This is provided on the left hand side and provides a detailed description of outcomes for the individual scenario selected. The blue line indicates the
+          <p>
+            This is provided on the left-hand side and provides a detailed description of outcomes for the individual scenario selected. The blue line indicates the
           median value of the outputted statistic, whilst the grey lines show all the individual runs. The different scenarios that have been computed can be selected on
-          the bottom-left. This opens the settings panel with the settings set for that scenario. The label can also be changed from here and the raw data can be downloaded as a csv file.
+          using the tabs on top of this panel.
+          </p>
+        <p>
+          The label for the scenario can be changed by selecting the <kbd><span class="glyphicon glyphicon-cog"></span></kbd> settings button. This also
+          provides an overview of the scenario parameters that were used to run the simulation.
+        </p>
+        <p>
+          The individual runs for the scenario can be downloaded using the <kbd><span class="glyphicon glyphicon-download-alt"></span></kbd> download button.
+          This generates a csv file with columns time (years),run,microfilaraemia,antigenaemia and mosquito prevalence.
+        </p>
+        <p>
+          The scenario can be deleted using the <kbd><span class="glyphicon glyphicon-remove-circle"></span></kbd> delete button.
         </p>
         <h5>Scenario Comparisons</h5>
         <p>
-          These can be selected on the right-hand side. Various comparison statistics can be selected and the results for each scenario computed are shown. There is also the option underneath to add
-        a new scenario.
-      </p>
+          These can be selected on the right-hand side. Various comparison statistics can be selected and the results for each scenario computed are shown.
+        </p>
         <h4>Further Reading</h4>
         <div class="row">
           <div class="col-sm-6 col-md-4">
@@ -577,7 +589,7 @@
               <div class="caption">
                 <h3>Accompanying paper</h3>
                 <p>Provides a description and motivation behind this tool.</p>
-                <p><a href="#" class="">link</a></p>
+                <p><a href="#" class="" onclick="alert('Accompanying paper currently under submission.');">link</a></p>
               </div>
             </div>
           </div>
