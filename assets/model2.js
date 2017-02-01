@@ -1,6 +1,26 @@
+//New random number generator.
 var s = new Random();
 
 function Person(a,b) {
+    /*
+    Class: Person
+    Inputs:
+    a,b - gamma distribution to generat the risk
+    Parameters:
+    b - bite risk
+    M - microfilariae
+    WM - male worm count
+    WF - female worm count
+    I - immunity (basically not considered, but can include again)
+    bednet - whether individual is using a bed-net
+    t - time (same for all individuals)
+    u - parameter that controls likelihood of participating in MDA round.
+    Functions:
+    repRate - number of replicating female worms
+    biteRate - individual age-dependent bite rate
+    initialise - reset individual when they die.
+    react - single time-step update
+    */
     //constructor(a,b) {
         this.b = s.gamma(a,b);
         this.M = 0.5;
@@ -12,10 +32,13 @@ function Person(a,b) {
         this.t = 0;
         this.u = s.normal(params.u0,Math.sqrt(params.sigma));
 
-    //}
+
 
 
     this.repRate = function(){
+      //replication rate of mf.
+      //nu controls the degree of polygamy (0-worms completely polygamous).
+      //nu set to 0.
       if (params.nu == 0){
 
         if (this.WM>0){
@@ -30,7 +53,8 @@ function Person(a,b) {
     }
 
     this.biteRate = function(){
-        if (this.a < 108.0){ //less than 9 * 12 = 108.0
+      //Age-dependent biting rate function.
+        if (this.a < 108.0){ //less than 9yrs * 12months = 108.0months
             return this.a/108.0;
         }  else {
             return 1.0;
@@ -38,29 +62,26 @@ function Person(a,b) {
     }
 
     this.react = function(){
+          //individual bite reduction from bednets.
           var bNReduction = 1 - (1-params.sN) * this.bedNet;
+
           //immune state update
 
-          //I +=  (param->dt) *( (double) W - param->z * I);
+          //immunity updated using Runge-Kutta 4.
           this.I = immuneRK4Step(this.W , this.I);
+
           //male worm update
           var births = poisson(0.5 * bNReduction * params.xi  * this.biteRate() * params.L3 * Math.exp(-1 * params.theta * this.I) * this.b *  params.dt); //exp(-1 * beta * I)
-          //births = param->poisson_dist(0.5 * param->xi  * biteRate() * param->L3 * exp(-1 * param->theta * I) * b *  param->dt); //exp(-1 * beta * I)
           var deaths = poisson( params.mu *this.WM * params.dt );
           this.WM += births - deaths;
 
           //female worm update
           births = poisson(0.5 * bNReduction * params.xi * this.biteRate() * params.L3 * Math.exp(-1 * params.theta * this.I) * this.b  * params.dt); //* exp(-1 * beta * I)
-          //births = param->poisson_dist(0.5  * param->xi  * biteRate() * param->L3 * exp(-1 * param->theta * I) * b *  param->dt); //exp(-1 * beta * I)
           deaths = poisson( params.mu * this.WF * params.dt );
           this.WF += births - deaths;
 
           //Mf update
-          //births = poisson(param->alpha * WF * WM);
-          //deaths = poisson(param->gamma * M);
-          //M += births - deaths;
           this.M += params.dt * (this.repRate() - params.gamma * this.M);
-          //M += param->dt * (repRate() - param->gamma * M);
           //total worm count
           this.W = this.WM+this.WF;
           //time-step
@@ -95,6 +116,42 @@ function Person(a,b) {
 
 
 function Model(n){
+  /*
+  Class: Model
+  Stores individuals and parameters and runs simulation.
+  Inputs:
+  n - size of population
+  Parameters:
+  sU -
+  sB -
+  sN -
+  people - array of Person objects.
+  n - population number
+  ts - records times
+  Ms - records population microfilaraemia
+  Ws - records worm prevalence
+  Ls - records larave density in mosqitos
+  Functions:
+  saveOngoing - save population-level statistics to arrays.
+  L3 - calculate L3 density in mosquito
+  prevalence - calculate mf prevalence
+  aPrevalence - calculate worm (antigen) prevalence
+  MDAEvent - simulate MDA event
+  bedNetEvent -  simulate a bednet distribution event
+  nRounds - no longer used.
+  reduction - no longer used.
+  reductionYears - no longer used.
+  evolveAndSaves - main function that runs the model with a burn-in period of 100 years followed by treatment
+  immuneRK4Step - update immunity using Runge-Kutta (basically not used as we haven't considered immunity before)
+  L3Uptake - larve taken up by mosquito dependent on mosquito species.
+  expTrunc - draw randomly from truncated exponential for initialising ages.
+  possion - draw from poisson distribution
+  NormSInv - inverse multivariate Gaussian used to compute individuals' use of mda and bednets.
+  setBR - use generic intervention that lowers bite rate.
+  setVH - use generic intervention that lowers vector to host ratio.
+  setMu - use generic intervention that increases mosquito mortality.
+
+  */
     //constructor(n){
 
         this.sU=0;
@@ -252,10 +309,6 @@ function Model(n){
             }
 
             if ((t % params.mdaFreq == 0) && (t < Math.floor(t) + params.dt)){ //things that need to occur annually
-              //if(t>maxoldMDAt){
-              //  params.mfPropMDA = (1-params.IDAchi);//0.0;
-              //  params.wPropMDA = (1-params.IDAtau);//0.0;
-              //}
               if( (t>1200.0) && (t<= maxMDAt) ){ //if after one hundred years and less than 125 years.
                     this.MDAEvent();
 
@@ -276,7 +329,6 @@ function Model(n){
           this.Ls = this.Ls.slice(200,this.Ls.length);
           var maxt = this.ts[200];
           this.ts = math.subtract(this.ts.slice(200,this.ts.length),maxt);
-          //plot(this.ts,this.Ws,this.Ms,this.Ls);
         }
 
 
@@ -385,11 +437,11 @@ setMu = function(intervention){
 }
 
 
-//var params = [];
+//Dictionary (hash) to store parameters.
 var params = {
-    riskMu1 : 1.0,
-    riskMu2 : 1.0 ,
-    riskMu3 : 1.0 ,
+    riskMu1 : 1.0, //ignore
+    riskMu2 : 1.0 , //ignore
+    riskMu3 : 1.0 , //ignore
     shapeRisk : 0.065, //shape parameter for bite-risk distribution (0.1/0.065)
     mu : 0.0104, //death rate of worms
     theta : 0.0 , //0.001 //immune system response parameter. 0.112
@@ -442,6 +494,7 @@ params.sigma = params.rho/(1-params.rho);
 params.u0 = - NormSInv(params.covMDA) * Math.sqrt(1+params.sigma);
 
 setPropMDA = function(regimen){
+    //used to interface between model and user-interace to set MDA regimen.
     ps = modelParams();
     chis = [0.99,0.95,0.99,1.0, Number(ps.microfilaricide)/100,0.99];
     taus = [0.35,0.55,0.1,1.0, Number(ps.macrofilaricide)/100,0.1];
@@ -450,6 +503,7 @@ setPropMDA = function(regimen){
 }
 
 closest =  function(num, arr) {
+    //generic function to find nearest value to num in array arr.
     var mid;
     var lo = 0;
     var hi = arr.length - 1;
@@ -468,6 +522,7 @@ closest =  function(num, arr) {
 }
 
 setVHFromPrev = function(p,species){
+  //set vector to host ratio from prevalence using pre-calculated look-up table.
   /*
   var anVH = [5., 5.55555556, 6.11111111, 6.66666667, 7.22222222, 7.77777778, 8.33333333, 8.88888889, 9.44444444,  10. ],
       cVH = [ 4.,  4.55555556,  5.11111111,  5.66666667,  6.22222222, 6.77777778,  7.33333333,  7.88888889,  8.44444444,  9.],
@@ -492,6 +547,7 @@ setVHFromPrev = function(p,species){
 }
 
 setInputParams = function(dict){
+    //set parameters from the user-interface.
     ps = modelParams();
     params.inputs = ps;
     params.runs = Number(ps.runs);
@@ -529,6 +585,7 @@ setInputParams = function(dict){
     params.u0 = - NormSInv(params.covMDA) * Math.sqrt(1+params.sigma);
 }
 plot = function(tx,wM,mfM,lM){
+  //plotting command using c3.js
                   wM.unshift('worm_burden');
                   mfM.unshift('mf_burden');
                   lM.unshift('L3');
